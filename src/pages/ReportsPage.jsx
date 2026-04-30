@@ -1,0 +1,171 @@
+import { useCallback, useEffect, useState } from "react";
+import * as reportsAPI from "../api/reports";
+import { Button } from "../components/common/Button";
+import { LoadingSkeleton } from "../components/common/Loading";
+import ReportCard from "../components/reports/ReportCard";
+import ReportSection from "../components/reports/ReportSection";
+import useError from "../hooks/useError";
+import { TASK_BUCKETS } from "../utils/constants";
+
+export default function ReportsPage() {
+	const [reportData, setReportData] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const [selectedBucket, setSelectedBucket] = useState(null);
+
+	const loadReports = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
+
+		try {
+			const response = await reportsAPI.getTaskSummary();
+			setReportData(response);
+		} catch (err) {
+			setError(err.message || "Failed to load reports");
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		loadReports();
+	}, [loadReports]);
+
+	// Handles displaying of error toasts
+	useError(error, () => setError(""));
+
+	if (isLoading && !reportData) {
+		return (
+			<div className="p-4">
+				<h1 className="text-3xl font-bold text-zinc-900 mb-6">Reports</h1>
+				<LoadingSkeleton count={3} />
+			</div>
+		);
+	}
+
+	return (
+		<div className="p-4">
+			{/* Header */}
+			<div className="mb-6">
+				<h1 className="text-3xl font-bold text-zinc-900">
+					Reports & Analytics
+				</h1>
+				<p className="text-zinc-600 mt-2">
+					Track your task progress and deadlines
+				</p>
+			</div>
+
+			{/* Bucket Filter */}
+			<div className="mb-6">
+				<h3 className="text-sm font-semibold text-zinc-700 mb-3">
+					Filter by Bucket
+				</h3>
+				<div className="flex gap-2 flex-wrap">
+					<button
+						type="button"
+						onClick={() => setSelectedBucket(null)}
+						className={`
+              px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all
+              ${
+								selectedBucket === null
+									? "bg-blue-600 text-white"
+									: "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
+							}
+            `}
+					>
+						All Buckets
+					</button>
+					{TASK_BUCKETS.map((bucket) => (
+						<button
+							type="button"
+							key={bucket}
+							onClick={() => setSelectedBucket(bucket)}
+							className={`
+                px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all
+                ${
+									selectedBucket === bucket
+										? "bg-blue-600 text-white"
+										: "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
+								}
+              `}
+						>
+							{bucket}
+						</button>
+					))}
+				</div>
+			</div>
+
+			{/* Summary Cards */}
+			{reportData ? (
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+					{/* Overdue Card */}
+					<ReportCard
+						title="Overdue Tasks"
+						count={reportData.overdue.count}
+						color="red"
+						tasks={reportData.overdue.tasks}
+						selectedBucket={selectedBucket}
+						target="#overdue"
+					/>
+
+					{/* Due Today Card */}
+					<ReportCard
+						title="Due Today"
+						count={reportData.dueToday.count}
+						color="orange"
+						tasks={reportData.dueToday.tasks}
+						selectedBucket={selectedBucket}
+						target="#today"
+					/>
+
+					{/* Future Card */}
+					<ReportCard
+						title="Future Tasks"
+						count={reportData.future.count}
+						color="green"
+						tasks={reportData.future.tasks}
+						selectedBucket={selectedBucket}
+						target="#future"
+					/>
+				</div>
+			) : null}
+
+			{/* Detailed Task Lists */}
+			<div className="space-y-8">
+				{/* Overdue Section */}
+				<ReportSection
+					title="Overdue Tasks"
+					tasks={reportData?.overdue.tasks || []}
+					selectedBucket={selectedBucket}
+					isEmpty={reportData?.overdue.count === 0}
+					id="overdue"
+				/>
+
+				{/* Due Today Section */}
+				<ReportSection
+					title="Due Today"
+					tasks={reportData?.dueToday.tasks || []}
+					selectedBucket={selectedBucket}
+					isEmpty={reportData?.dueToday.count === 0}
+					id="today"
+				/>
+
+				{/* Future Section */}
+				<ReportSection
+					title="Future Tasks"
+					tasks={reportData?.future.tasks || []}
+					selectedBucket={selectedBucket}
+					isEmpty={reportData?.future.count === 0}
+					id="future"
+				/>
+			</div>
+
+			{/* Refresh Button */}
+			<div className="mt-8 text-center">
+				<Button variant="secondary" onClick={loadReports}>
+					Refresh Reports
+				</Button>
+			</div>
+		</div>
+	);
+}

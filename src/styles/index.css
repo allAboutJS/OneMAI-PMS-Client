@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "@fontsource/google-sans-flex";
+
+* {
+	font-family: "Google Sans Flex", Arial, Helvetica, sans-serif;
+	scroll-behavior: smooth;
+}
+
+body {
+	background-color: var(--color-gray-50);
+	color: var(--color-gray-900);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
