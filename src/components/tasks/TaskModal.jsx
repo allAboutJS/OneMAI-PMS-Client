@@ -10,6 +10,7 @@ import {
 	formatDateTime,
 	getPriorityColor,
 } from "../../utils/formatters";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { Badge } from "../common/Badge";
 import { Button } from "../common/Button";
 import { Modal } from "../common/Modal";
@@ -36,30 +37,6 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 	const canEdit = isAdmin();
 	const canChangeStatus = isAdmin() || isAssignedToMe;
 
-	const showSuccessToast = (title, message) =>
-		toast.success(
-			<div>
-				<div className="font-semibold">{title}</div>
-				<div>{message}</div>
-			</div>,
-		);
-
-	const showErrorToast = (title, message) =>
-		toast.error(
-			<div>
-				<div className="font-semibold">{title}</div>
-				<div>{message}</div>
-			</div>,
-		);
-
-	const showInfoToast = (title, message) =>
-		toast(
-			<div>
-				<div className="font-semibold">{title}</div>
-				<div>{message}</div>
-			</div>,
-		);
-
 	// Handle status change
 	const handleStatusChange = async (newStatus) => {
 		if (newStatus === task.status) return;
@@ -75,9 +52,7 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 
 			if (result.success) {
 				setSelectedStatus(newStatus);
-
 				showSuccessToast("Status Updated", `Task moved to ${newStatus}`);
-
 				onTasksChange?.();
 			} else {
 				showErrorToast(
@@ -87,7 +62,6 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 			}
 		} catch (err) {
 			toast.dismiss(loadingToast);
-
 			showErrorToast(
 				"Unexpected Error",
 				err.message || "Something went wrong while updating status",

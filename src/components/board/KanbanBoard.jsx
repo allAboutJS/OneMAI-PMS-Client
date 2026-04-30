@@ -11,14 +11,20 @@ import { Loading, LoadingSkeleton } from "../common/Loading";
 import { BoardColumn } from "./BoardColumn";
 
 export function KanbanBoard() {
-	const { fetchTasksByBucket, updateTaskStatus, isLoading, error, clearError } =
-		useTaskStore();
+	const {
+		fetchTasksByBucket,
+		updateTaskStatus,
+		isLoading,
+		error,
+		clearError,
+		selectedBucket,
+		setSelectedBucket,
+	} = useTaskStore();
 
 	const { openCreateTaskModal } = useUIStore();
 	const { isAdmin } = useAuthStore();
 
 	const [boardData, setBoardData] = useState(null);
-	const [selectedBucket, setSelectedBucket] = useState(TASK_BUCKETS[0]);
 
 	const loadBucket = useCallback(
 		async (bucket) => {
@@ -31,20 +37,21 @@ export function KanbanBoard() {
 	);
 
 	useEffect(() => {
-		loadBucket(selectedBucket);
+		if (selectedBucket) {
+			loadBucket(selectedBucket);
+		}
 	}, [selectedBucket, loadBucket]);
 
 	useError(error, clearError);
 
 	const handleDragEnd = async (event) => {
 		const { operation } = event;
-
-		console.log(operation);
-
 		const draggedTaskId = operation?.source?.id;
 		const targetStatus = operation?.target?.id;
 
-		if (!draggedTaskId || !targetStatus) return;
+		if (!draggedTaskId || !targetStatus) {
+			return;
+		}
 
 		let movedTask = null;
 
@@ -97,6 +104,18 @@ export function KanbanBoard() {
 			</div>
 
 			<div className="flex gap-2 overflow-x-auto pb-2">
+				<button
+					type="button"
+					onClick={() => setSelectedBucket("All")}
+					className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+						selectedBucket === "All"
+							? "bg-blue-600 text-white shadow-md"
+							: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+					}`}
+				>
+					All
+				</button>
+
 				{TASK_BUCKETS.map((bucket) => (
 					<button
 						type="button"

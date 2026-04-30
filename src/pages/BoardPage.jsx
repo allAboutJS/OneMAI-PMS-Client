@@ -5,11 +5,11 @@ import { TaskForm } from "../components/tasks/TaskForm";
 import { useAuthStore } from "../store/authStore";
 import { useTaskStore } from "../store/taskStore";
 import { useUIStore } from "../store/uiStore";
+import { showErrorToast, showSuccessToast } from "../utils/toast";
 
 export default function BoardPage() {
 	const { isAdmin } = useAuthStore();
-	const { createTaskModalOpen, closeCreateTaskModal, addNotification } =
-		useUIStore();
+	const { createTaskModalOpen, closeCreateTaskModal } = useUIStore();
 	const { createTask } = useTaskStore();
 	const [isCreating, setIsCreating] = useState(false);
 
@@ -19,16 +19,13 @@ export default function BoardPage() {
 		const result = await createTask(taskData);
 
 		if (result.success) {
-			addNotification({
-				type: "success",
-				message: "Task created successfully",
-			});
+			showSuccessToast("Task Creation Success", "Task created successfully");
 			closeCreateTaskModal();
 		} else {
-			addNotification({
-				type: "error",
-				message: result.error || "Failed to create task",
-			});
+			showErrorToast(
+				"Task Creation Error",
+				result.error || "Failed to create task",
+			);
 		}
 
 		setIsCreating(false);

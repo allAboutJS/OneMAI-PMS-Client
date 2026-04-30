@@ -6,7 +6,7 @@ export const useTaskStore = create((set, get) => ({
 	tasks: [],
 	filteredTasks: [],
 	selectedTask: null,
-	selectedBucket: "Feature Development",
+	selectedBucket: "All",
 	isLoading: false,
 	error: null,
 	filters: {
@@ -81,12 +81,16 @@ export const useTaskStore = create((set, get) => ({
 		try {
 			const response = await tasksAPI.createTask(taskData);
 			const { task } = response;
+			const { tasks, selectedBucket } = get();
 
-			const { tasks } = get();
 			set({
 				tasks: [...tasks, task],
 				error: null,
+				selectedBucket: "", // Set selected bucket to an empty string
 			});
+
+			// Set the selected bucket to a normal value to trigger UI update
+			setTimeout(() => set({ selectedBucket }));
 
 			return { success: true, task };
 		} catch (error) {
@@ -191,5 +195,9 @@ export const useTaskStore = create((set, get) => ({
 
 	setError: (error) => {
 		set({ error });
+	},
+
+	setSelectedBucket: (selectedBucket) => {
+		set({ selectedBucket });
 	},
 }));
