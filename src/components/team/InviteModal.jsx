@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as authAPI from "../../api/auth";
 import useError from "../../hooks/useError";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
