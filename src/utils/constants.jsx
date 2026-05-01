@@ -13,6 +13,7 @@ export const TASK_BUCKETS = [
 	"Improvements / Enhancements",
 	"Technical Infrastructure",
 	"QA / Testing & Release",
+	"OneMAI Business",
 ];
 
 export const BUCKET_COLORS = {
