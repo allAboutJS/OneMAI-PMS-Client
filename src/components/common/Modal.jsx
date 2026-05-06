@@ -20,15 +20,7 @@ export function Modal({
 	};
 
 	return (
-		<div
-			className="fixed h-full w-full inset-0 bg-black/50 z-50 p-4 overflow-auto"
-			onClick={(e) => {
-				// Close on backdrop click
-				if (e.target === e.currentTarget) {
-					onClose();
-				}
-			}}
-		>
+		<div className="fixed h-full w-full inset-0 bg-black/50 z-50 p-4 overflow-auto">
 			<div
 				className={`bg-white rounded-lg m-auto h-fit shadow-lg w-full ${sizeStyles[size]} ${className}`}
 			>
