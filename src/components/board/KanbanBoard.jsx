@@ -8,6 +8,7 @@ import { useUIStore } from "../../store/uiStore";
 import { TASK_BUCKETS, TASK_STATUSES } from "../../utils/constants";
 import { Button } from "../common/Button";
 import { Loading, LoadingSkeleton } from "../common/Loading";
+import { AssigneeSelect } from "../tasks/AssigneeSelect";
 import { BoardColumn } from "./BoardColumn";
 
 export function KanbanBoard() {
@@ -25,6 +26,7 @@ export function KanbanBoard() {
 	const { isAdmin } = useAuthStore();
 
 	const [boardData, setBoardData] = useState(null);
+	const [selectedAssignees, setSelectedAssignees] = useState([]);
 
 	const loadBucket = useCallback(
 		async (bucket) => {
@@ -132,6 +134,16 @@ export function KanbanBoard() {
 				))}
 			</div>
 
+			<div>
+				<AssigneeSelect
+					onChange={(value) => {
+						setSelectedAssignees(value);
+					}}
+					value={selectedAssignees}
+					label="Filter By Users"
+				/>
+			</div>
+
 			{boardData ? (
 				<DragDropProvider onDragEnd={handleDragEnd}>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 overflow-hidden">
@@ -140,7 +152,15 @@ export function KanbanBoard() {
 								key={status}
 								status={status}
 								bucket={selectedBucket}
-								tasks={boardData[status] || []}
+								tasks={
+									selectedAssignees.length
+										? boardData[status]?.filter((task) => {
+												return task.assignedTo?.some((user) =>
+													selectedAssignees.includes(user._id),
+												);
+											})
+										: boardData[status] || []
+								}
 								onTasksChange={() => loadBucket(selectedBucket)}
 							/>
 						))}

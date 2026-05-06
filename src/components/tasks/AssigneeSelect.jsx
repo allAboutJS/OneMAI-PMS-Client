@@ -3,7 +3,12 @@ import * as authAPI from "../../api/auth";
 import useError from "../../hooks/useError";
 import { Loading } from "../common/Loading";
 
-export function AssigneeSelect({ value = [], onChange, disabled = false }) {
+export function AssigneeSelect({
+	value = [],
+	onChange,
+	disabled = false,
+	label = "Assign To",
+}) {
 	const [users, setUsers] = useState([]);
 	const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -66,7 +71,7 @@ export function AssigneeSelect({ value = [], onChange, disabled = false }) {
 	return (
 		<div className="flex flex-col gap-3">
 			<label htmlFor="" className="block text-sm font-medium text-zinc-700">
-				Assign To
+				{label}
 			</label>
 
 			{/* Selected Users */}

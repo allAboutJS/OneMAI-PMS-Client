@@ -4,6 +4,7 @@ import { Button } from "../components/common/Button";
 import { LoadingSkeleton } from "../components/common/Loading";
 import ReportCard from "../components/reports/ReportCard";
 import ReportSection from "../components/reports/ReportSection";
+import { AssigneeSelect } from "../components/tasks/AssigneeSelect";
 import useError from "../hooks/useError";
 import { TASK_BUCKETS } from "../utils/constants";
 
@@ -12,6 +13,7 @@ export default function ReportsPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [selectedBucket, setSelectedBucket] = useState(null);
+	const [selectedAssignees, setSelectedAssignees] = useState([]);
 
 	const loadReports = useCallback(async () => {
 		setIsLoading(true);
@@ -95,15 +97,39 @@ export default function ReportsPage() {
 				</div>
 			</div>
 
+			<div className="mb-6">
+				<AssigneeSelect
+					onChange={(value) => {
+						setSelectedAssignees(value);
+					}}
+					value={selectedAssignees}
+					label="Filter By Users"
+				/>
+			</div>
+
 			{/* Summary Cards */}
 			{reportData ? (
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
 					{/* Overdue Card */}
 					<ReportCard
 						title="Overdue Tasks"
-						count={reportData.overdue.count}
+						count={
+							reportData.overdue.tasks.filter((task) =>
+								task.assignedTo.some((user) =>
+									selectedAssignees.length
+										? selectedAssignees.includes(user._id)
+										: true,
+								),
+							).count
+						}
 						color="red"
-						tasks={reportData.overdue.tasks}
+						tasks={reportData.overdue.tasks.filter((task) =>
+							task.assignedTo.some((user) =>
+								selectedAssignees.length
+									? selectedAssignees.includes(user._id)
+									: true,
+							),
+						)}
 						selectedBucket={selectedBucket}
 						target="#overdue"
 					/>
@@ -111,9 +137,23 @@ export default function ReportsPage() {
 					{/* Due Today Card */}
 					<ReportCard
 						title="Due Today"
-						count={reportData.dueToday.count}
+						count={
+							reportData.dueToday.tasks.filter((task) =>
+								task.assignedTo.some((user) =>
+									selectedAssignees.length
+										? selectedAssignees.includes(user._id)
+										: true,
+								),
+							).count
+						}
 						color="orange"
-						tasks={reportData.dueToday.tasks}
+						tasks={reportData.dueToday.tasks.filter((task) =>
+							task.assignedTo.some((user) =>
+								selectedAssignees.length
+									? selectedAssignees.includes(user._id)
+									: true,
+							),
+						)}
 						selectedBucket={selectedBucket}
 						target="#today"
 					/>
@@ -121,9 +161,23 @@ export default function ReportsPage() {
 					{/* Future Card */}
 					<ReportCard
 						title="Future Tasks"
-						count={reportData.future.count}
+						count={
+							reportData.future.tasks.filter((task) =>
+								task.assignedTo.some((user) =>
+									selectedAssignees.length
+										? selectedAssignees.includes(user._id)
+										: true,
+								),
+							).count
+						}
 						color="blue"
-						tasks={reportData.future.tasks}
+						tasks={reportData.future.tasks.filter((task) =>
+							task.assignedTo.some((user) =>
+								selectedAssignees.length
+									? selectedAssignees.includes(user._id)
+									: true,
+							),
+						)}
 						selectedBucket={selectedBucket}
 						target="#future"
 					/>
@@ -131,9 +185,23 @@ export default function ReportsPage() {
 					{/* Completed Tasks Card */}
 					<ReportCard
 						title="Completed Tasks"
-						count={reportData.completed?.count || 0}
+						count={
+							reportData.completed.tasks.filter((task) =>
+								task.assignedTo.some((user) =>
+									selectedAssignees.length
+										? selectedAssignees.includes(user._id)
+										: true,
+								),
+							).count
+						}
 						color="green"
-						tasks={reportData.completed?.tasks || []}
+						tasks={reportData.completed.tasks.filter((task) =>
+							task.assignedTo.some((user) =>
+								selectedAssignees.length
+									? selectedAssignees.includes(user._id)
+									: true,
+							),
+						)}
 						selectedBucket={selectedBucket}
 						target="#completed"
 					/>
@@ -145,7 +213,13 @@ export default function ReportsPage() {
 				{/* Overdue Section */}
 				<ReportSection
 					title="Overdue Tasks"
-					tasks={reportData?.overdue.tasks || []}
+					tasks={reportData?.overdue.tasks.filter((task) =>
+						task.assignedTo.some((user) =>
+							selectedAssignees.length
+								? selectedAssignees.includes(user._id)
+								: true,
+						),
+					)}
 					selectedBucket={selectedBucket}
 					isEmpty={reportData?.overdue.count === 0}
 					id="overdue"
@@ -154,7 +228,13 @@ export default function ReportsPage() {
 				{/* Due Today Section */}
 				<ReportSection
 					title="Due Today"
-					tasks={reportData?.dueToday.tasks || []}
+					tasks={reportData?.dueToday.tasks.filter((task) =>
+						task.assignedTo.some((user) =>
+							selectedAssignees.length
+								? selectedAssignees.includes(user._id)
+								: true,
+						),
+					)}
 					selectedBucket={selectedBucket}
 					isEmpty={reportData?.dueToday.count === 0}
 					id="today"
@@ -163,7 +243,13 @@ export default function ReportsPage() {
 				{/* Future Section */}
 				<ReportSection
 					title="Future Tasks"
-					tasks={reportData?.future.tasks || []}
+					tasks={reportData?.future.tasks.filter((task) =>
+						task.assignedTo.some((user) =>
+							selectedAssignees.length
+								? selectedAssignees.includes(user._id)
+								: true,
+						),
+					)}
 					selectedBucket={selectedBucket}
 					isEmpty={reportData?.future.count === 0}
 					id="future"
@@ -172,7 +258,13 @@ export default function ReportsPage() {
 				{/* Completed Section */}
 				<ReportSection
 					title="Completed Tasks"
-					tasks={reportData?.completed?.tasks || []}
+					tasks={reportData?.completed?.tasks.filter((task) =>
+						task.assignedTo.some((user) =>
+							selectedAssignees.length
+								? selectedAssignees.includes(user._id)
+								: true,
+						),
+					)}
 					selectedBucket={selectedBucket}
 					isEmpty={!reportData?.completed || reportData.completed.count === 0}
 					id="completed"
