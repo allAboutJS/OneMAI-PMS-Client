@@ -4,7 +4,11 @@ import { toast } from "sonner";
 import useError from "../../hooks/useError";
 import { useAuthStore } from "../../store/authStore";
 import { useTaskStore } from "../../store/taskStore";
-import { BUCKET_ICONS, TASK_STATUSES } from "../../utils/constants";
+import {
+	BUCKET_ICONS,
+	BUCKET_VARIANTS,
+	TASK_STATUSES,
+} from "../../utils/constants";
 import {
 	formatDate,
 	formatDateTime,
@@ -170,7 +174,7 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 					<div className="flex gap-2 flex-wrap">
 						<Badge
 							label={task.bucket}
-							variant="purple"
+							variant={BUCKET_VARIANTS[task.bucket] || BUCKET_VARIANTS.Default}
 							icon={BUCKET_ICONS[task.bucket]}
 						/>
 						<Badge

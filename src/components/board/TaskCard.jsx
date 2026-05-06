@@ -4,7 +4,7 @@ import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useTaskStore } from "../../store/taskStore";
-import { BUCKET_ICONS } from "../../utils/constants";
+import { BUCKET_ICONS, BUCKET_VARIANTS } from "../../utils/constants";
 import { formatDate, truncate } from "../../utils/formatters";
 import { Badge } from "../common/Badge";
 import { TaskModal } from "../tasks/TaskModal";
@@ -76,7 +76,7 @@ export function TaskCard({ task, status, onTasksChange }) {
 					<div className="flex gap-2 flex-wrap">
 						<Badge
 							label={task.bucket}
-							variant="purple"
+							variant={BUCKET_VARIANTS[task.bucket] || BUCKET_VARIANTS.Default}
 							size="sm"
 							icon={BUCKET_ICONS[task.bucket]}
 						/>

@@ -16,12 +16,13 @@ export const TASK_BUCKETS = [
 	"OneMAI Business",
 ];
 
-export const BUCKET_COLORS = {
-	"Feature Development": "bucket-feature",
-	"Bug Fixes": "bucket-bug",
-	"Improvements / Enhancements": "bucket-improvement",
-	"Technical Infrastructure": "bucket-infrastructure",
-	"QA / Testing & Release": "bucket-qa",
+export const BUCKET_VARIANTS = {
+	"Feature Development": "purple",
+	"Bug Fixes": "red",
+	"Improvements / Enhancements": "blue",
+	"Technical Infrastructure": "orange",
+	"QA / Testing & Release": "green",
+	Default: "gray",
 };
 
 export const BUCKET_ICONS = {

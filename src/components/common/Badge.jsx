@@ -1,6 +1,6 @@
 export function Badge({
 	label,
-	variant = "gray",
+	variant,
 	size = "md",
 	className = "",
 	icon = null,
