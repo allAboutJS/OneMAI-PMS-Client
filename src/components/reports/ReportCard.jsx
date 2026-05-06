@@ -13,12 +13,14 @@ export default function ReportCard({
 		red: "bg-red-50",
 		orange: "bg-orange-50",
 		green: "bg-green-50",
+		blue: "bg-blue-50",
 	};
 
 	const borderColorMap = {
 		red: "border-red-200",
 		orange: "border-orange-200",
 		green: "border-green-200",
+		blue: "border-blue-200",
 	};
 
 	return (

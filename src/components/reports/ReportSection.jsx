@@ -1,4 +1,5 @@
 import { Sparkle } from "lucide-react";
+import { BUCKET_VARIANTS } from "../../utils/constants";
 import { formatDate } from "../../utils/formatters";
 import { Badge } from "../common/Badge";
 import { EmptyState } from "../common/EmptyState";
@@ -32,13 +33,16 @@ export default function ReportSection({ title, tasks, selectedBucket, id }) {
 							<div className="flex items-start justify-between">
 								<div className="flex-1">
 									<h4 className="font-semibold text-zinc-900">{task.title}</h4>
-									<p className="text-sm text-zinc-600 mt-1">
-										{task.description}
-									</p>
 
 									{/* Metadata */}
 									<div className="flex gap-2 mt-3 flex-wrap">
-										<Badge label={task.bucket} variant="purple" size="sm" />
+										<Badge
+											label={task.bucket}
+											variant={
+												BUCKET_VARIANTS[task.bucket] || BUCKET_VARIANTS.Default
+											}
+											size="sm"
+										/>
 										<Badge
 											label={task.status}
 											variant={

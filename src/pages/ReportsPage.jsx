@@ -38,7 +38,7 @@ export default function ReportsPage() {
 		return (
 			<div className="p-4">
 				<h1 className="text-3xl font-bold text-zinc-900 mb-6">Reports</h1>
-				<LoadingSkeleton count={3} />
+				<LoadingSkeleton count={4} />
 			</div>
 		);
 	}
@@ -97,7 +97,7 @@ export default function ReportsPage() {
 
 			{/* Summary Cards */}
 			{reportData ? (
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
 					{/* Overdue Card */}
 					<ReportCard
 						title="Overdue Tasks"
@@ -122,10 +122,20 @@ export default function ReportsPage() {
 					<ReportCard
 						title="Future Tasks"
 						count={reportData.future.count}
-						color="green"
+						color="blue"
 						tasks={reportData.future.tasks}
 						selectedBucket={selectedBucket}
 						target="#future"
+					/>
+
+					{/* Completed Tasks Card */}
+					<ReportCard
+						title="Completed Tasks"
+						count={reportData.completed?.count || 0}
+						color="green"
+						tasks={reportData.completed?.tasks || []}
+						selectedBucket={selectedBucket}
+						target="#completed"
 					/>
 				</div>
 			) : null}
@@ -157,6 +167,15 @@ export default function ReportsPage() {
 					selectedBucket={selectedBucket}
 					isEmpty={reportData?.future.count === 0}
 					id="future"
+				/>
+
+				{/* Completed Section */}
+				<ReportSection
+					title="Completed Tasks"
+					tasks={reportData?.completed?.tasks || []}
+					selectedBucket={selectedBucket}
+					isEmpty={!reportData?.completed || reportData.completed.count === 0}
+					id="completed"
 				/>
 			</div>
 
