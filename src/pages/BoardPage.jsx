@@ -2,13 +2,11 @@ import { useState } from "react";
 import { KanbanBoard } from "../components/board/KanbanBoard";
 import { Modal } from "../components/common/Modal";
 import { TaskForm } from "../components/tasks/TaskForm";
-import { useAuthStore } from "../store/authStore";
 import { useTaskStore } from "../store/taskStore";
 import { useUIStore } from "../store/uiStore";
 import { showErrorToast, showSuccessToast } from "../utils/toast";
 
 export default function BoardPage() {
-	const { isAdmin } = useAuthStore();
 	const { createTaskModalOpen, closeCreateTaskModal } = useUIStore();
 	const { createTask } = useTaskStore();
 	const [isCreating, setIsCreating] = useState(false);
@@ -36,20 +34,18 @@ export default function BoardPage() {
 			<KanbanBoard />
 
 			{/* Create Task Modal */}
-			{isAdmin() && (
-				<Modal
-					isOpen={createTaskModalOpen}
-					onClose={closeCreateTaskModal}
-					title="Create New Task"
-					size="lg"
-				>
-					<TaskForm
-						onSubmit={handleCreateTask}
-						onCancel={closeCreateTaskModal}
-						isLoading={isCreating}
-					/>
-				</Modal>
-			)}
+			<Modal
+				isOpen={createTaskModalOpen}
+				onClose={closeCreateTaskModal}
+				title="Create New Task"
+				size="lg"
+			>
+				<TaskForm
+					onSubmit={handleCreateTask}
+					onCancel={closeCreateTaskModal}
+					isLoading={isCreating}
+				/>
+			</Modal>
 		</>
 	);
 }

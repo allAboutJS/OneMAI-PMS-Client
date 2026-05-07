@@ -307,7 +307,7 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 
 				{/* Action Buttons */}
 				<div className="border-t border-gray-200 pt-6 flex gap-3">
-					{canEdit && (
+					{(canEdit || task.createdBy._id === user._id) && (
 						<Button
 							variant="primary"
 							size="sm"
@@ -320,7 +320,7 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 						</Button>
 					)}
 
-					{canEdit && (
+					{(canEdit || task.createdBy._id === user._id) && (
 						<Button
 							variant="danger"
 							size="sm"

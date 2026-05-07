@@ -6,14 +6,18 @@ import ReportCard from "../components/reports/ReportCard";
 import ReportSection from "../components/reports/ReportSection";
 import { AssigneeSelect } from "../components/tasks/AssigneeSelect";
 import useError from "../hooks/useError";
+import { useAuthStore } from "../store/authStore";
 import { TASK_BUCKETS } from "../utils/constants";
 
 export default function ReportsPage() {
+	const { isAdmin, user } = useAuthStore();
 	const [reportData, setReportData] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [selectedBucket, setSelectedBucket] = useState(null);
-	const [selectedAssignees, setSelectedAssignees] = useState([]);
+	const [selectedAssignees, setSelectedAssignees] = useState(
+		isAdmin() ? [user._id] : [],
+	);
 
 	const loadReports = useCallback(async () => {
 		setIsLoading(true);
@@ -97,15 +101,17 @@ export default function ReportsPage() {
 				</div>
 			</div>
 
-			<div className="mb-6">
-				<AssigneeSelect
-					onChange={(value) => {
-						setSelectedAssignees(value);
-					}}
-					value={selectedAssignees}
-					label="Filter By Users"
-				/>
-			</div>
+			{isAdmin() && (
+				<div className="mb-6">
+					<AssigneeSelect
+						onChange={(value) => {
+							setSelectedAssignees(value);
+						}}
+						value={selectedAssignees}
+						label="Filter By Users"
+					/>
+				</div>
+			)}
 
 			{/* Summary Cards */}
 			{reportData ? (

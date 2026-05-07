@@ -23,7 +23,7 @@ export function KanbanBoard() {
 	} = useTaskStore();
 
 	const { openCreateTaskModal } = useUIStore();
-	const { isAdmin } = useAuthStore();
+	const { isAdmin, user } = useAuthStore();
 
 	const [boardData, setBoardData] = useState(null);
 	const [selectedAssignees, setSelectedAssignees] = useState([]);
@@ -98,11 +98,9 @@ export function KanbanBoard() {
 					<p className="text-zinc-600 mt-1">Organize and track your tasks</p>
 				</div>
 
-				{isAdmin() && (
-					<Button variant="primary" onClick={openCreateTaskModal}>
-						+ New Task
-					</Button>
-				)}
+				<Button variant="primary" onClick={openCreateTaskModal}>
+					+ New Task
+				</Button>
 			</div>
 
 			<div className="flex gap-2 overflow-x-auto pb-2">
@@ -134,15 +132,17 @@ export function KanbanBoard() {
 				))}
 			</div>
 
-			<div>
-				<AssigneeSelect
-					onChange={(value) => {
-						setSelectedAssignees(value);
-					}}
-					value={selectedAssignees}
-					label="Filter By Users"
-				/>
-			</div>
+			{isAdmin() && (
+				<div>
+					<AssigneeSelect
+						onChange={(value) => {
+							setSelectedAssignees(value);
+						}}
+						value={selectedAssignees}
+						label="Filter By Users"
+					/>
+				</div>
+			)}
 
 			{boardData ? (
 				<DragDropProvider onDragEnd={handleDragEnd}>

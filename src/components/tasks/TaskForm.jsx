@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthStore } from "../../store/authStore";
 import { TASK_BUCKETS, TASK_PRIORITIES } from "../../utils/constants";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
@@ -10,6 +11,9 @@ export function TaskForm({
 	onCancel,
 	isLoading = false,
 }) {
+	const [errors, setErrors] = useState({});
+	const { isAdmin, user } = useAuthStore();
+
 	const [formData, setFormData] = useState({
 		title: task?.title || "",
 		description: task?.description || "",
@@ -17,10 +21,10 @@ export function TaskForm({
 		priority: task?.priority || "Medium",
 		dueDate: task?.dueDate ? task.dueDate.split("T")[0] : "",
 		tags: task?.tags?.join(", ") || "",
-		assignedTo: task?.assignedTo?.map((u) => u._id) || [],
+		assignedTo: isAdmin()
+			? task?.assignedTo?.map((u) => u._id) || []
+			: [user._id],
 	});
-
-	const [errors, setErrors] = useState({});
 
 	// Handle input changes
 	const handleChange = (e) => {
@@ -208,16 +212,18 @@ export function TaskForm({
 			</div>
 
 			{/* Assignees select */}
-			<AssigneeSelect
-				value={formData.assignedTo}
-				onChange={(assignees) =>
-					setFormData((prev) => ({
-						...prev,
-						assignedTo: assignees,
-					}))
-				}
-				disabled={isLoading}
-			/>
+			{isAdmin() && (
+				<AssigneeSelect
+					value={formData.assignedTo}
+					onChange={(assignees) =>
+						setFormData((prev) => ({
+							...prev,
+							assignedTo: assignees,
+						}))
+					}
+					disabled={isLoading}
+				/>
+			)}
 
 			{/* Due Date */}
 			<Input
