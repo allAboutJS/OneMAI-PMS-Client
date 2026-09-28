@@ -61,6 +61,13 @@ export function TaskCard({ task, status, onTasksChange }) {
 					onClick={handleCardClick}
 					className="text-left w-full group"
 				>
+					{task.ticketId && (
+						<div className="mb-1.5">
+							<span className="text-[11px] font-mono font-bold text-blue-600 bg-blue-50 border border-blue-200/80 px-1.5 py-0.5 rounded tracking-wide">
+								{task.ticketId}
+							</span>
+						</div>
+					)}
 					<h3 className="font-semibold text-zinc-900 group-hover:text-blue-600 transition line-clamp-2">
 						{task.title}
 					</h3>

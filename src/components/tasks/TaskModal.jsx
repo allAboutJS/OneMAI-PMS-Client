@@ -164,6 +164,13 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 				<div className="mb-6 space-y-4">
 					<div className="flex items-start justify-between">
 						<div className="flex-1">
+							{task.ticketId && (
+								<div className="mb-1.5">
+									<span className="text-xs font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded tracking-wide">
+										{task.ticketId}
+									</span>
+								</div>
+							)}
 							<h1 className="text-2xl font-bold text-zinc-900">{task.title}</h1>
 							<p className="text-sm text-zinc-600 mt-1">
 								Created {formatDateTime(task.createdAt)}

@@ -32,7 +32,16 @@ export default function ReportSection({ title, tasks, selectedBucket, id }) {
 						>
 							<div className="flex items-start justify-between">
 								<div className="flex-1">
-									<h4 className="font-semibold text-zinc-900">{task.title}</h4>
+									<div className="flex items-center gap-2">
+										{task.ticketId && (
+											<span className="text-[11px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded tracking-wide">
+												{task.ticketId}
+											</span>
+										)}
+										<h4 className="font-semibold text-zinc-900">
+											{task.title}
+										</h4>
+									</div>
 
 									{/* Metadata */}
 									<div className="flex gap-2 mt-3 flex-wrap">
