@@ -20,29 +20,32 @@ export function KanbanBoard() {
 		clearError,
 		selectedBucket,
 		setSelectedBucket,
+		completedTimeframe,
+		setCompletedTimeframe,
 	} = useTaskStore();
 
 	const { openCreateTaskModal } = useUIStore();
-	const { isAdmin, user } = useAuthStore();
+	const { isAdmin } = useAuthStore();
 
 	const [boardData, setBoardData] = useState(null);
 	const [selectedAssignees, setSelectedAssignees] = useState([]);
 
 	const loadBucket = useCallback(
-		async (bucket) => {
-			const result = await fetchTasksByBucket(bucket);
+		async (bucket, timeframe) => {
+			const tf = timeframe || completedTimeframe || "2weeks";
+			const result = await fetchTasksByBucket(bucket, tf);
 			if (result.success) {
 				setBoardData(result.statuses);
 			}
 		},
-		[fetchTasksByBucket],
+		[fetchTasksByBucket, completedTimeframe],
 	);
 
 	useEffect(() => {
 		if (selectedBucket) {
-			loadBucket(selectedBucket);
+			loadBucket(selectedBucket, completedTimeframe);
 		}
-	}, [selectedBucket, loadBucket]);
+	}, [selectedBucket, completedTimeframe, loadBucket]);
 
 	useError(error, clearError);
 
@@ -82,7 +85,7 @@ export function KanbanBoard() {
 		const result = await updateTaskStatus(draggedTaskId, targetStatus);
 
 		if (!result.success) {
-			loadBucket(selectedBucket);
+			loadBucket(selectedBucket, completedTimeframe);
 		}
 	};
 
@@ -103,33 +106,58 @@ export function KanbanBoard() {
 				</Button>
 			</div>
 
-			<div className="flex gap-2 overflow-x-auto pb-2">
-				<button
-					type="button"
-					onClick={() => setSelectedBucket("All")}
-					className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
-						selectedBucket === "All"
-							? "bg-blue-600 text-white shadow-md"
-							: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
-					}`}
-				>
-					All
-				</button>
-
-				{TASK_BUCKETS.map((bucket) => (
+			{/* Filter Controls Bar */}
+			<div className="flex flex-wrap items-center justify-between gap-4">
+				{/* Bucket Tabs */}
+				<div className="flex gap-2 overflow-x-auto pb-1 max-w-full">
 					<button
 						type="button"
-						key={bucket}
-						onClick={() => setSelectedBucket(bucket)}
+						onClick={() => setSelectedBucket("All")}
 						className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
-							selectedBucket === bucket
+							selectedBucket === "All"
 								? "bg-blue-600 text-white shadow-md"
 								: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
 						}`}
 					>
-						{bucket}
+						All
 					</button>
-				))}
+
+					{TASK_BUCKETS.map((bucket) => (
+						<button
+							type="button"
+							key={bucket}
+							onClick={() => setSelectedBucket(bucket)}
+							className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+								selectedBucket === bucket
+									? "bg-blue-600 text-white shadow-md"
+									: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+							}`}
+						>
+							{bucket}
+						</button>
+					))}
+				</div>
+
+				{/* Completed Timeframe Filter */}
+				<div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg">
+					<label
+						htmlFor="timeframe-select"
+						className="text-xs font-semibold text-zinc-600 whitespace-nowrap"
+					>
+						Completed:
+					</label>
+					<select
+						id="timeframe-select"
+						value={completedTimeframe}
+						onChange={(e) => setCompletedTimeframe(e.target.value)}
+						className="text-xs font-medium bg-transparent text-zinc-800 focus:outline-none cursor-pointer"
+					>
+						<option value="2weeks">Last 2 Weeks (Default)</option>
+						<option value="1month">Last 1 Month</option>
+						<option value="2months">Last 2 Months</option>
+						<option value="3months">Last 3 Months (Max)</option>
+					</select>
+				</div>
 			</div>
 
 			{isAdmin() && (
@@ -152,6 +180,7 @@ export function KanbanBoard() {
 								key={status}
 								status={status}
 								bucket={selectedBucket}
+								timeframe={completedTimeframe}
 								tasks={
 									selectedAssignees.length
 										? boardData[status]?.filter((task) => {
@@ -161,7 +190,9 @@ export function KanbanBoard() {
 											})
 										: boardData[status] || []
 								}
-								onTasksChange={() => loadBucket(selectedBucket)}
+								onTasksChange={() =>
+									loadBucket(selectedBucket, completedTimeframe)
+								}
 							/>
 						))}
 					</div>

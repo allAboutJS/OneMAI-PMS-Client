@@ -50,9 +50,24 @@ export const deleteTask = async (taskId) => {
 	return response;
 };
 
-export const getTasksByBucket = async (bucketName) => {
+export const getTasksByBucket = async (
+	bucketName,
+	completedTimeframe = "2weeks",
+) => {
 	const response = await client.get(
-		`/tasks/bucket/${encodeURIComponent(bucketName)}`,
+		`/tasks/bucket/${encodeURIComponent(bucketName)}?completedTimeframe=${encodeURIComponent(completedTimeframe)}`,
+	);
+	return response;
+};
+
+export const addComment = async (taskId, commentData) => {
+	const response = await client.post(`/tasks/${taskId}/comments`, commentData);
+	return response;
+};
+
+export const deleteComment = async (taskId, commentId) => {
+	const response = await client.delete(
+		`/tasks/${taskId}/comments/${commentId}`,
 	);
 	return response;
 };

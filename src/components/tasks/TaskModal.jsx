@@ -18,6 +18,7 @@ import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { Badge } from "../common/Badge";
 import { Button } from "../common/Button";
 import { Modal } from "../common/Modal";
+import { TaskComments } from "./TaskComments";
 import { TaskForm } from "./TaskForm";
 
 export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
@@ -304,6 +305,9 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 						</div>
 					</div>
 				)}
+
+				{/* Discussion & Comments */}
+				<TaskComments task={task} onCommentChange={onTasksChange} />
 
 				{/* Action Buttons */}
 				<div className="border-t border-gray-200 pt-6 flex gap-3">

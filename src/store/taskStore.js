@@ -7,6 +7,7 @@ export const useTaskStore = create((set, get) => ({
 	filteredTasks: [],
 	selectedTask: null,
 	selectedBucket: "All",
+	completedTimeframe: "2weeks",
 	isLoading: false,
 	error: null,
 	filters: {
@@ -39,15 +40,21 @@ export const useTaskStore = create((set, get) => ({
 		}
 	},
 
-	fetchTasksByBucket: async (bucketName) => {
+	fetchTasksByBucket: async (bucketName, timeframe = null) => {
 		set({ isLoading: true, error: null });
 
+		const activeTimeframe = timeframe || get().completedTimeframe || "2weeks";
+
 		try {
-			const response = await tasksAPI.getTasksByBucket(bucketName);
+			const response = await tasksAPI.getTasksByBucket(
+				bucketName,
+				activeTimeframe,
+			);
 			const { statuses } = response;
 
 			set({
 				selectedBucket: bucketName,
+				completedTimeframe: activeTimeframe,
 				isLoading: false,
 				error: null,
 			});
@@ -177,6 +184,44 @@ export const useTaskStore = create((set, get) => ({
 		}
 	},
 
+	addComment: async (taskId, commentData) => {
+		try {
+			const response = await tasksAPI.addComment(taskId, commentData);
+			const { task } = response;
+
+			const { tasks } = get();
+			set({
+				tasks: tasks.map((t) => (t._id === taskId ? task : t)),
+				selectedTask: task,
+				error: null,
+			});
+
+			return { success: true, task, comment: response.comment };
+		} catch (error) {
+			set({ error: error.message });
+			return { success: false, error: error.message };
+		}
+	},
+
+	deleteComment: async (taskId, commentId) => {
+		try {
+			const response = await tasksAPI.deleteComment(taskId, commentId);
+			const { task } = response;
+
+			const { tasks } = get();
+			set({
+				tasks: tasks.map((t) => (t._id === taskId ? task : t)),
+				selectedTask: task,
+				error: null,
+			});
+
+			return { success: true, task };
+		} catch (error) {
+			set({ error: error.message });
+			return { success: false, error: error.message };
+		}
+	},
+
 	selectTask: (task) => {
 		set({ selectedTask: task });
 	},
@@ -199,5 +244,9 @@ export const useTaskStore = create((set, get) => ({
 
 	setSelectedBucket: (selectedBucket) => {
 		set({ selectedBucket });
+	},
+
+	setCompletedTimeframe: (completedTimeframe) => {
+		set({ completedTimeframe });
 	},
 }));

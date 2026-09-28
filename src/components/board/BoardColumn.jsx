@@ -5,7 +5,20 @@ import { getStatusBgColor } from "../../utils/formatters";
 import { EmptyState } from "../common/EmptyState";
 import { TaskCard } from "./TaskCard";
 
-export function BoardColumn({ status, bucket, tasks = [], onTasksChange }) {
+const TIMEFRAME_LABELS = {
+	"2weeks": "Last 2 weeks",
+	"1month": "Last 1 month",
+	"2months": "Last 2 months",
+	"3months": "Last 3 months",
+};
+
+export function BoardColumn({
+	status,
+	bucket,
+	tasks = [],
+	onTasksChange,
+	timeframe = "2weeks",
+}) {
 	const { ref, isDropTarget } = useDroppable({
 		id: status,
 	});
@@ -16,7 +29,14 @@ export function BoardColumn({ status, bucket, tasks = [], onTasksChange }) {
 				className={`p-4 border-b border-gray-200 ${getStatusBgColor(status)}`}
 			>
 				<div className="flex items-center justify-between">
-					<h2 className="font-semibold text-zinc-900">{status}</h2>
+					<div className="flex items-center gap-1.5">
+						<h2 className="font-semibold text-zinc-900">{status}</h2>
+						{status === "Completed" && (
+							<span className="text-[11px] text-zinc-500 font-normal">
+								({TIMEFRAME_LABELS[timeframe] || "Last 2 weeks"})
+							</span>
+						)}
+					</div>
 					<span className="text-sm font-medium px-2.5 py-0.5 bg-zinc-200 text-zinc-800 rounded-full">
 						{tasks.length}
 					</span>
