@@ -12,194 +12,194 @@ import { AssigneeSelect } from "../tasks/AssigneeSelect";
 import { BoardColumn } from "./BoardColumn";
 
 export function KanbanBoard() {
-	const {
-		fetchTasksByBucket,
-		updateTaskStatus,
-		isLoading,
-		error,
-		clearError,
-		selectedBucket,
-		setSelectedBucket,
-		completedTimeframe,
-		setCompletedTimeframe,
-	} = useTaskStore();
+  const {
+    fetchTasksByBucket,
+    updateTaskStatus,
+    isLoading,
+    error,
+    clearError,
+    selectedBucket,
+    setSelectedBucket,
+    completedTimeframe,
+    setCompletedTimeframe,
+  } = useTaskStore();
 
-	const { openCreateTaskModal } = useUIStore();
-	const { isAdmin } = useAuthStore();
+  const { openCreateTaskModal } = useUIStore();
+  const { isAdmin } = useAuthStore();
 
-	const [boardData, setBoardData] = useState(null);
-	const [selectedAssignees, setSelectedAssignees] = useState([]);
+  const [boardData, setBoardData] = useState(null);
+  const [selectedAssignees, setSelectedAssignees] = useState([]);
 
-	const loadBucket = useCallback(
-		async (bucket, timeframe) => {
-			const tf = timeframe || completedTimeframe || "2weeks";
-			const result = await fetchTasksByBucket(bucket, tf);
-			if (result.success) {
-				setBoardData(result.statuses);
-			}
-		},
-		[fetchTasksByBucket, completedTimeframe],
-	);
+  const loadBucket = useCallback(
+    async (bucket, timeframe) => {
+      const tf = timeframe || completedTimeframe || "2weeks";
+      const result = await fetchTasksByBucket(bucket, tf);
+      if (result.success) {
+        setBoardData(result.statuses);
+      }
+    },
+    [fetchTasksByBucket, completedTimeframe],
+  );
 
-	useEffect(() => {
-		if (selectedBucket) {
-			loadBucket(selectedBucket, completedTimeframe);
-		}
-	}, [selectedBucket, completedTimeframe, loadBucket]);
+  useEffect(() => {
+    if (selectedBucket) {
+      loadBucket(selectedBucket, completedTimeframe);
+    }
+  }, [selectedBucket, completedTimeframe, loadBucket]);
 
-	useError(error, clearError);
+  useError(error, clearError);
 
-	const handleDragEnd = async (event) => {
-		const { operation } = event;
-		const draggedTaskId = operation?.source?.id;
-		const targetStatus = operation?.target?.id;
+  const handleDragEnd = async (event) => {
+    const { operation } = event;
+    const draggedTaskId = operation?.source?.id;
+    const targetStatus = operation?.target?.id;
 
-		if (!draggedTaskId || !targetStatus) {
-			return;
-		}
+    if (!draggedTaskId || !targetStatus) {
+      return;
+    }
 
-		let movedTask = null;
+    let movedTask = null;
 
-		setBoardData((prev) => {
-			if (!prev) return prev;
+    setBoardData((prev) => {
+      if (!prev) return prev;
 
-			const updated = { ...prev };
+      const updated = { ...prev };
 
-			for (const status of TASK_STATUSES) {
-				updated[status] = (updated[status] || []).filter((task) => {
-					if (task._id === draggedTaskId) {
-						movedTask = { ...task, status: targetStatus };
-						return false;
-					}
-					return true;
-				});
-			}
+      for (const status of TASK_STATUSES) {
+        updated[status] = (updated[status] || []).filter((task) => {
+          if (task._id === draggedTaskId) {
+            movedTask = { ...task, status: targetStatus };
+            return false;
+          }
+          return true;
+        });
+      }
 
-			if (movedTask) {
-				updated[targetStatus] = [...(updated[targetStatus] || []), movedTask];
-			}
+      if (movedTask) {
+        updated[targetStatus] = [...(updated[targetStatus] || []), movedTask];
+      }
 
-			return updated;
-		});
+      return updated;
+    });
 
-		const result = await updateTaskStatus(draggedTaskId, targetStatus);
+    const result = await updateTaskStatus(draggedTaskId, targetStatus);
 
-		if (!result.success) {
-			loadBucket(selectedBucket, completedTimeframe);
-		}
-	};
+    if (!result.success) {
+      loadBucket(selectedBucket, completedTimeframe);
+    }
+  };
 
-	if (isLoading && !boardData) {
-		return <Loading text="Loading board..." />;
-	}
+  if (isLoading && !boardData) {
+    return <Loading text="Loading board..." />;
+  }
 
-	return (
-		<div className="min-h-full flex flex-col gap-6 p-4">
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-3xl font-bold text-zinc-900">Kanban Board</h1>
-					<p className="text-zinc-600 mt-1">Organize and track your tasks</p>
-				</div>
+  return (
+    <div className="min-h-full flex flex-col gap-6 p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-zinc-900">Kanban Board</h1>
+          <p className="text-zinc-600 mt-1">Organize and track your tasks</p>
+        </div>
 
-				<Button variant="primary" onClick={openCreateTaskModal}>
-					+ New Task
-				</Button>
-			</div>
+        <Button variant="primary" onClick={openCreateTaskModal}>
+          + New Task
+        </Button>
+      </div>
 
-			{/* Filter Controls Bar */}
-			<div className="flex flex-wrap items-center justify-between gap-4">
-				{/* Bucket Tabs */}
-				<div className="flex gap-2 overflow-x-auto pb-1 max-w-full">
-					<button
-						type="button"
-						onClick={() => setSelectedBucket("All")}
-						className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
-							selectedBucket === "All"
-								? "bg-blue-600 text-white shadow-md"
-								: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
-						}`}
-					>
-						All
-					</button>
+      {/* Filter Controls Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {/* Bucket Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1 max-w-full">
+          <button
+            type="button"
+            onClick={() => setSelectedBucket("All")}
+            className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+              selectedBucket === "All"
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+            }`}
+          >
+            All
+          </button>
 
-					{TASK_BUCKETS.map((bucket) => (
-						<button
-							type="button"
-							key={bucket}
-							onClick={() => setSelectedBucket(bucket)}
-							className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
-								selectedBucket === bucket
-									? "bg-blue-600 text-white shadow-md"
-									: "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
-							}`}
-						>
-							{bucket}
-						</button>
-					))}
-				</div>
+          {TASK_BUCKETS.map((bucket) => (
+            <button
+              type="button"
+              key={bucket}
+              onClick={() => setSelectedBucket(bucket)}
+              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                selectedBucket === bucket
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+              }`}
+            >
+              {bucket}
+            </button>
+          ))}
+        </div>
 
-				{/* Completed Timeframe Filter */}
-				<div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg">
-					<label
-						htmlFor="timeframe-select"
-						className="text-xs font-semibold text-zinc-600 whitespace-nowrap"
-					>
-						Completed:
-					</label>
-					<select
-						id="timeframe-select"
-						value={completedTimeframe}
-						onChange={(e) => setCompletedTimeframe(e.target.value)}
-						className="text-xs font-medium bg-transparent text-zinc-800 focus:outline-none cursor-pointer"
-					>
-						<option value="2weeks">Last 2 Weeks (Default)</option>
-						<option value="1month">Last 1 Month</option>
-						<option value="2months">Last 2 Months</option>
-						<option value="3months">Last 3 Months (Max)</option>
-					</select>
-				</div>
-			</div>
+        {/* Completed Timeframe Filter */}
+        <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg">
+          <label
+            htmlFor="timeframe-select"
+            className="text-xs font-semibold text-zinc-600 whitespace-nowrap"
+          >
+            Completed:
+          </label>
+          <select
+            id="timeframe-select"
+            value={completedTimeframe}
+            onChange={(e) => setCompletedTimeframe(e.target.value)}
+            className="text-xs font-medium bg-transparent text-zinc-800 focus:outline-none cursor-pointer"
+          >
+            <option value="2weeks">Last 2 Weeks</option>
+            <option value="1month">Last 1 Month</option>
+            <option value="2months">Last 2 Months</option>
+            <option value="3months">Last 3 Months</option>
+          </select>
+        </div>
+      </div>
 
-			{isAdmin() && (
-				<div>
-					<AssigneeSelect
-						onChange={(value) => {
-							setSelectedAssignees(value);
-						}}
-						value={selectedAssignees}
-						label="Filter By Users"
-					/>
-				</div>
-			)}
+      {isAdmin() && (
+        <div>
+          <AssigneeSelect
+            onChange={(value) => {
+              setSelectedAssignees(value);
+            }}
+            value={selectedAssignees}
+            label="Filter By Users"
+          />
+        </div>
+      )}
 
-			{boardData ? (
-				<DragDropProvider onDragEnd={handleDragEnd}>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 overflow-hidden">
-						{TASK_STATUSES.map((status) => (
-							<BoardColumn
-								key={status}
-								status={status}
-								bucket={selectedBucket}
-								timeframe={completedTimeframe}
-								tasks={
-									selectedAssignees.length
-										? boardData[status]?.filter((task) => {
-												return task.assignedTo?.some((user) =>
-													selectedAssignees.includes(user._id),
-												);
-											})
-										: boardData[status] || []
-								}
-								onTasksChange={() =>
-									loadBucket(selectedBucket, completedTimeframe)
-								}
-							/>
-						))}
-					</div>
-				</DragDropProvider>
-			) : (
-				<LoadingSkeleton count={3} />
-			)}
-		</div>
-	);
+      {boardData ? (
+        <DragDropProvider onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-1 overflow-hidden">
+            {TASK_STATUSES.map((status) => (
+              <BoardColumn
+                key={status}
+                status={status}
+                bucket={selectedBucket}
+                timeframe={completedTimeframe}
+                tasks={
+                  selectedAssignees.length
+                    ? boardData[status]?.filter((task) => {
+                        return task.assignedTo?.some((user) =>
+                          selectedAssignees.includes(user._id),
+                        );
+                      })
+                    : boardData[status] || []
+                }
+                onTasksChange={() =>
+                  loadBucket(selectedBucket, completedTimeframe)
+                }
+              />
+            ))}
+          </div>
+        </DragDropProvider>
+      ) : (
+        <LoadingSkeleton count={4} />
+      )}
+    </div>
+  );
 }

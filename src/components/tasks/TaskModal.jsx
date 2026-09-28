@@ -180,7 +180,13 @@ export function TaskModal({ isOpen, onClose, task, onTasksChange }) {
 						/>
 						<Badge
 							label={task.status}
-							variant={task.status === "Completed" ? "green" : "blue"}
+							variant={
+								task.status === "Completed"
+									? "green"
+									: task.status === "In Review"
+										? "purple"
+										: "blue"
+							}
 						/>
 						{task.priority && task.priority !== "Medium" && (
 							<Badge

@@ -34,17 +34,24 @@ export const BUCKET_ICONS = {
 };
 
 // Task Statuses
-export const TASK_STATUSES = ["Not Started", "In Progress", "Completed"];
+export const TASK_STATUSES = [
+	"Not Started",
+	"In Progress",
+	"In Review",
+	"Completed",
+];
 
 export const STATUS_COLORS = {
 	"Not Started": "status-notStarted",
 	"In Progress": "status-inProgress",
+	"In Review": "status-inReview",
 	Completed: "status-completed",
 };
 
 export const STATUS_ICONS = {
 	"Not Started": "⭕",
 	"In Progress": "🔄",
+	"In Review": "📋",
 	Completed: "✓",
 };
 

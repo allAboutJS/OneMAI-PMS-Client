@@ -195,6 +195,7 @@ export const getStatusBgColor = (status) => {
 	const colors = {
 		"Not Started": "bg-zinc-100 text-zinc-800",
 		"In Progress": "bg-blue-100 text-blue-800",
+		"In Review": "bg-purple-100 text-purple-800",
 		Completed: "bg-green-100 text-green-800",
 	};
 	return colors[status] || "bg-zinc-100 text-zinc-800";
